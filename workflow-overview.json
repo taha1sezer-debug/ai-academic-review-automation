@@ -1,0 +1,85 @@
+{
+  "project": "AI-Powered Academic Article Review Automation",
+  "format": "Sanitized documentation; not importable",
+  "platform": "Make.com",
+  "modules": [
+    {
+      "step": 1,
+      "module": "tally:watchNewResponse",
+      "action": "Receive author metadata, category, and uploaded article"
+    },
+    {
+      "step": 2,
+      "module": "http:MakeRequest",
+      "action": "GET uploaded article"
+    },
+    {
+      "step": 3,
+      "module": "gemini-ai:uploadAFile",
+      "action": "Upload article document"
+    },
+    {
+      "step": 4,
+      "module": "gemini-ai:createACompletionGeminiPro",
+      "action": "Classify and evaluate article; generate structured JSON",
+      "error_handler_step": 5
+    },
+    {
+      "step": 5,
+      "module": "builtin:Resume",
+      "action": "Resume error handler for Gemini completion"
+    },
+    {
+      "step": 6,
+      "module": "json:ParseJSON",
+      "action": "Parse decision, approval flag, scores, article type, category, keywords, strengths, improvements, HTML report, and author summary"
+    },
+    {
+      "step": 7,
+      "module": "builtin:BasicRouter",
+      "action": "Route on approval Boolean"
+    },
+    {
+      "step": 8,
+      "module": "google-email:sendAnEmail",
+      "condition": "automatic_approval = true",
+      "action": "Send approval notification and report"
+    },
+    {
+      "step": 9,
+      "module": "google-email:sendAnEmail",
+      "condition": "automatic_approval = false",
+      "action": "Send feedback/revision notification and report"
+    }
+  ],
+  "evaluation": {
+    "threshold": 85,
+    "score_range": "0-100",
+    "publication_type_aware": true,
+    "criteria": [
+      "academic structure",
+      "scientific quality",
+      "references",
+      "language",
+      "ethics",
+      "originality",
+      "readability",
+      "contribution"
+    ],
+    "output_fields": [
+      "karar",
+      "otomatik_onay",
+      "toplam_puan",
+      "puan_dagilimi",
+      "makale_turu",
+      "kategori",
+      "anahtar_kelimeler",
+      "guclu_yonler",
+      "gelistirilecek_yonler",
+      "detayli_rapor_html",
+      "yazara_ozet_mesaji"
+    ]
+  },
+  "privacy": "All operational IDs, private prompt text, addresses, submissions and credentials omitted",
+  "disclaimer": "AI recommendations require human editorial review"
+}
